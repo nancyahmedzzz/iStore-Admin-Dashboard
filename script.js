@@ -42,6 +42,38 @@ window.toggleTheme = function() {
     }
 }
 
+// 4. دالة تبديل القائمة الجانبية في الشاشات الصغيرة
+window.toggleSidebar = function() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    if (!sidebar) return;
+
+    const isHidden = sidebar.classList.contains('translate-x-full');
+    
+    if (isHidden) {
+        // Show
+        sidebar.classList.remove('translate-x-full');
+        sidebar.classList.add('translate-x-0');
+        if (overlay) {
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+            }, 10);
+        }
+    } else {
+        // Hide
+        sidebar.classList.add('translate-x-full');
+        sidebar.classList.remove('translate-x-0');
+        if (overlay) {
+            overlay.classList.add('opacity-0');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+            }, 300);
+        }
+    }
+}
+
 // --- مساحة الرسوم البيانية ---
 let salesChartInstance = null;
 let categoryPieInstance = null;
