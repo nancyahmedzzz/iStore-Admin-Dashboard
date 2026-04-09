@@ -183,6 +183,198 @@ window.updateCharts = function() {
     setTimeout(window.initChart, 50);
 }
 
+// --- الإشعارات ---
+window.toggleNotifications = function() {
+    const panel = document.getElementById('notificationsPanel');
+    if (!panel) return;
+    
+    if (panel.classList.contains('hidden')) {
+        panel.classList.remove('hidden');
+        setTimeout(() => {
+            panel.classList.remove('opacity-0', 'translate-y-[-10px]');
+            panel.classList.add('opacity-100', 'translate-y-0');
+        }, 10);
+    } else {
+        panel.classList.remove('opacity-100', 'translate-y-0');
+        panel.classList.add('opacity-0', 'translate-y-[-10px]');
+        setTimeout(() => {
+            panel.classList.add('hidden');
+        }, 300);
+    }
+}
+
+// إغلاق الإشعارات عند النقر خارجها
+document.addEventListener('click', function(event) {
+    const panel = document.getElementById('notificationsPanel');
+    const bellBtn = event.target.closest('button[onclick="toggleNotifications()"]');
+    
+    if (panel && !panel.classList.contains('hidden') && !bellBtn && !panel.contains(event.target)) {
+        window.toggleNotifications();
+    }
+});
+
+// --- مركز الإشعارات الشامل (Drawer) ---
+window.openAllNotifications = function() {
+    const smallPanel = document.getElementById('notificationsPanel');
+    if (smallPanel && !smallPanel.classList.contains('hidden')) {
+        window.toggleNotifications();
+    }
+    
+    const drawer = document.getElementById('allNotificationsDrawer');
+    const content = document.getElementById('allNotificationsContent');
+    if (!drawer || !content) return;
+    
+    drawer.classList.remove('hidden');
+    setTimeout(() => {
+        content.classList.remove('-translate-x-full');
+        content.classList.add('translate-x-0');
+    }, 10);
+};
+
+window.closeAllNotifications = function() {
+    const drawer = document.getElementById('allNotificationsDrawer');
+    const content = document.getElementById('allNotificationsContent');
+    if (!drawer || !content) return;
+    
+    content.classList.remove('translate-x-0');
+    content.classList.add('-translate-x-full');
+    setTimeout(() => {
+        drawer.classList.add('hidden');
+    }, 300);
+};
+
+window.markAllNotificationsAsRead = function() {
+    const list = document.getElementById('notificationsList');
+    if (!list) return;
+    
+    list.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full py-20 opacity-0 scale-95 transition-all duration-500" id="emptyNotifications">
+            <div class="w-20 h-20 bg-emerald-100 text-emerald-500 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mb-4">
+                <i data-lucide="check-circle-2" class="w-10 h-10"></i>
+            </div>
+            <h4 class="text-base font-bold text-[var(--text-primary)]">لا توجد إشعارات جديدة</h4>
+            <p class="text-sm text-[var(--text-secondary)] mt-2 text-center leading-relaxed">لقد قمت بمراجعة جميع التنبيهات والأحداث الخاصة بمتجرك.</p>
+        </div>
+    `;
+    
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+    
+    setTimeout(() => {
+        const emptyState = document.getElementById('emptyNotifications');
+        if(emptyState) {
+            emptyState.classList.remove('opacity-0', 'scale-95');
+            emptyState.classList.add('opacity-100', 'scale-100');
+        }
+    }, 50);
+    
+    const redDots = document.querySelectorAll('span.bg-rose-500');
+    redDots.forEach(dot => {
+        dot.style.display = 'none';
+    });
+    
+    const badges = document.querySelectorAll('span.bg-emerald-100');
+    badges.forEach(badge => {
+        if(badge.textContent.includes('جديد') && badge.classList.contains('px-2')) {
+            badge.style.display = 'none';
+        }
+    });
+};
+
+// --- إضافة عميل جديد ---
+window.openNewClientModal = function() {
+    const modal = document.getElementById('newClientModal');
+    const content = document.getElementById('newClientModalContent');
+    if (!modal) return;
+    
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
+    }, 10);
+};
+
+window.closeNewClientModal = function() {
+    const modal = document.getElementById('newClientModal');
+    const content = document.getElementById('newClientModalContent');
+    if (!modal) return;
+    
+    content.classList.remove('scale-100', 'opacity-100');
+    content.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
+};
+
+window.handleNewClientSubmit = function(e) {
+    e.preventDefault();
+    
+    const btnText = document.getElementById('btnText');
+    const btnLoader = document.getElementById('btnLoader');
+    
+    if(btnText && btnLoader) {
+        btnText.classList.add('hidden');
+        btnLoader.classList.remove('hidden');
+    }
+    
+    setTimeout(() => {
+        const name = document.getElementById('clientName').value;
+        const email = document.getElementById('clientEmail').value;
+        const products = document.getElementById('clientProducts').value;
+        const amount = document.getElementById('clientAmount').value;
+        
+        const tableBody = document.querySelector('tbody');
+        
+        if(tableBody) {
+            const formattedAmount = '$' + parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            const newRow = document.createElement('tr');
+            newRow.className = 'hover:bg-[var(--hover-bg)] group cursor-pointer transition-colors bg-emerald-500/10 transition-colors duration-500';
+            
+            newRow.innerHTML = `
+                <td class="px-6 py-3">
+                    <div class="flex items-center">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random" class="w-9 h-9 rounded-full ml-3 border border-[var(--border-color)]">
+                        <span class="font-bold text-[var(--text-primary)]">${name}</span>
+                    </div>
+                </td>
+                <td class="px-6 py-3 text-[var(--text-secondary)] font-en">${email}</td>
+                <td class="px-6 py-3 font-en text-xs">
+                    <div class="flex items-center gap-1">
+                        <i data-lucide="shopping-bag" class="w-4 h-4 text-emerald-500"></i>
+                        <span>${products}</span>
+                    </div>
+                </td>
+                <td class="px-6 py-3 font-bold text-[var(--text-primary)] font-en">${formattedAmount}</td>
+                <td class="px-6 py-3">
+                    <span class="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 py-1 px-3 rounded-full text-[10px] font-bold">جديد</span>
+                </td>
+            `;
+            
+            tableBody.insertBefore(newRow, tableBody.firstChild);
+            
+            // Re-initialize icons for the newly added row
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons({
+                    root: newRow
+                });
+            }
+            
+            setTimeout(() => {
+                newRow.classList.remove('bg-emerald-500/10');
+            }, 2000);
+        }
+        
+        e.target.reset();
+        if(btnText && btnLoader) {
+            btnText.classList.remove('hidden');
+            btnLoader.classList.add('hidden');
+        }
+        closeNewClientModal();
+        
+    }, 800);
+};
+
 // --- الإقلاع الرئيسي المباشر للسكريبت بمجرد تحميل الصفحة ---
 document.addEventListener('DOMContentLoaded', () => {
     // 1. تهيئة الأيقونات

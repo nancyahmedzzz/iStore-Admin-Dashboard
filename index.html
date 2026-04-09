@@ -120,12 +120,41 @@
                         <i data-lucide="sun" class="w-4 h-4 block dark:hidden"></i>
                     </div>
                 </button>
-                <button
-                    class="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--hover-bg)] transition-all relative hover:-translate-y-1 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]">
-                    <i data-lucide="bell" class="w-4 h-4"></i>
-                    <span
-                        class="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-[var(--bg-surface)] anim-float"></span>
-                </button>
+                <div class="relative">
+                    <button onclick="toggleNotifications()"
+                        class="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--hover-bg)] transition-all relative hover:-translate-y-1 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]">
+                        <i data-lucide="bell" class="w-4 h-4"></i>
+                        <span
+                            class="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-[var(--bg-surface)] anim-float"></span>
+                    </button>
+                    <!-- Notifications Dropdown -->
+                    <div id="notificationsPanel" class="hidden absolute top-14 left-0 w-80 sm:w-96 glass-panel border border-[var(--border-color)] rounded-2xl shadow-2xl z-50 transition-all duration-300 opacity-0 translate-y-[-10px] overflow-hidden">
+                        <div class="p-4 border-b border-[var(--border-color)] flex justify-between items-center text-right">
+                            <h3 class="font-bold text-[var(--text-primary)]">الإشعارات</h3>
+                            <span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-bold">2 جديد</span>
+                        </div>
+                        <div class="max-h-80 overflow-y-auto text-right">
+                            <div class="p-4 border-b border-[var(--border-color)] hover:bg-[var(--hover-bg)] cursor-pointer transition-colors relative">
+                                <div class="w-2 h-2 bg-emerald-500 rounded-full absolute right-4 top-1/2 -translate-y-1/2"></div>
+                                <div class="mr-6">
+                                    <h4 class="text-sm font-bold text-[var(--text-primary)]">طلب جديد #1024</h4>
+                                    <p class="text-xs text-[var(--text-secondary)] mt-1">تم تسجيل طلب شراء iPhone 15 Pro Max جديد</p>
+                                    <span class="text-[10px] text-[var(--text-secondary)] mt-2 block">منذ 5 دقائق</span>
+                                </div>
+                            </div>
+                            <div class="p-4 hover:bg-[var(--hover-bg)] cursor-pointer transition-colors">
+                                <div class="mr-6">
+                                    <h4 class="text-sm font-bold text-[var(--text-primary)]">تحديث النظام</h4>
+                                    <p class="text-xs text-[var(--text-secondary)] mt-1">تم الانتهاء من تحديث قواعد البيانات بنجاح</p>
+                                    <span class="text-[10px] text-[var(--text-secondary)] mt-2 block">منذ ساعتين</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div onclick="openAllNotifications()" class="p-3 border-t border-[var(--border-color)] text-center cursor-pointer hover:bg-[var(--hover-bg)] transition-colors">
+                            <span class="text-sm text-[var(--text-primary)] font-bold">عرض جميع الإشعارات</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -282,6 +311,101 @@
             </div>
         </main>
     </div>
+
+    <!-- All Notifications Drawer -->
+    <div id="allNotificationsDrawer" class="hidden fixed inset-0 z-[110] flex justify-start">
+        <div class="absolute inset-0 bg-[var(--bg-main)]/80 backdrop-blur-md" onclick="closeAllNotifications()"></div>
+        <div id="allNotificationsContent" class="absolute top-0 left-0 h-full w-[100%] sm:w-[400px] bg-[var(--bg-surface)] border-r border-[var(--border-color)] shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col">
+            <div class="p-6 border-b border-[var(--border-color)] flex justify-between items-center bg-[var(--bg-main)]/50 backdrop-blur-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 flex items-center justify-center">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-[var(--text-primary)] relative">الإشعارات</h2>
+                    </div>
+                </div>
+                <button type="button" onclick="closeAllNotifications()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--hover-bg)] text-[var(--text-secondary)] transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div id="notificationsList" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar text-right">
+                <div class="p-4 rounded-xl bg-[var(--bg-main)] border border-[var(--border-color)] hover:border-emerald-500/30 transition-colors group">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                            <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-bold text-[var(--text-primary)]">طلب جديد #1024</h4>
+                            <p class="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">تم تسجيل طلب شراء iPhone 15 Pro Max جديد بقيمة $1,199.00.</p>
+                            <span class="text-[10px] text-emerald-500 font-bold mt-2 block font-en">مُنذ 5 دقائق</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[var(--bg-main)] border border-[var(--border-color)] hover:border-emerald-500/30 transition-colors group">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-sky-100 text-sky-600 dark:bg-sky-900/30 dark:text-sky-400 flex items-center justify-center shrink-0">
+                            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-bold text-[var(--text-primary)]">تحديث النظام</h4>
+                            <p class="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">تم الانتهاء من تحديث قواعد البيانات بنجاح.</p>
+                            <span class="text-[10px] text-[var(--text-secondary)] font-bold mt-2 block font-en">مُنذ ساعتين</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-4 rounded-xl bg-[var(--bg-main)] border border-[var(--border-color)] hover:border-emerald-500/30 transition-colors group">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400 flex items-center justify-center shrink-0">
+                            <i data-lucide="user-plus" class="w-5 h-5"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-bold text-[var(--text-primary)]">تسجيل عميل جديد</h4>
+                            <p class="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">تحديث: تم إضافة "ياسمين مصطفى" إلى قائمة العملاء.</p>
+                            <span class="text-[10px] text-[var(--text-secondary)] font-bold mt-2 block font-en">مُنذ 3 ساعات</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-4 rounded-xl bg-[var(--bg-main)] border border-[var(--border-color)] hover:border-emerald-500/30 transition-colors group">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400 flex items-center justify-center shrink-0">
+                            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-bold text-[var(--text-primary)]">تنبيه مخزون</h4>
+                            <p class="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">مخزون AirPods Pro 2 على وشك النفاد (متبقي 3 قطع فقط).</p>
+                            <span class="text-[10px] text-[var(--text-secondary)] font-bold mt-2 block font-en">مُنذ 1 يوم</span>
+                        </div>
+                    </div>
+                </div>
+                
+                 <div class="p-4 rounded-xl bg-[var(--bg-main)] border border-[var(--border-color)] hover:border-emerald-500/30 transition-colors group">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                            <i data-lucide="credit-card" class="w-5 h-5"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-bold text-[var(--text-primary)]">دفعة مستلمة</h4>
+                            <p class="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">تم استلام مبلغ $4,250.00 بنجاح عبر بوابة Stripe.</p>
+                            <span class="text-[10px] text-[var(--text-secondary)] font-bold mt-2 block font-en">مُنذ 1 يوم</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 border-t border-[var(--border-color)] bg-[var(--bg-main)]/50 backdrop-blur-sm">
+                <button onclick="markAllNotificationsAsRead()" class="w-full py-3 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--hover-bg)] transition-colors shadow-sm flex items-center justify-center gap-2">
+                    <i data-lucide="check-check" class="w-4 h-4"></i>
+                    تحديد الكل كمقروء
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 
