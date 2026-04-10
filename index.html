@@ -242,10 +242,10 @@
                     <div class="premium-card p-6 lg:col-span-2 h-[450px] flex flex-col stagger-6">
                         <div class="flex justify-between items-center mb-6">
                             <h2 class="text-lg font-bold text-[var(--text-primary)]">نظرة عامة على إيرادات الأجهزة</h2>
-                            <select
+                            <select id="yearSelector" onchange="updateCharts()"
                                 class="bg-[var(--bg-main)] border border-[var(--border-color)] text-[var(--text-primary)] text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-[var(--accent)] font-en">
-                                <option>2026</option>
-                                <option>2025</option>
+                                <option value="2026">2026</option>
+                                <option value="2025">2025</option>
                             </select>
                         </div>
                         <div class="flex-1 relative w-full"><canvas id="salesChart"></canvas></div>

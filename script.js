@@ -75,6 +75,11 @@ window.toggleSidebar = function() {
 }
 
 // --- مساحة الرسوم البيانية ---
+const salesData = {
+    "2026": [85000, 121000, 98000, 142000, 128000, 181000, 169000, 215000],
+    "2025": [70000, 95000, 80000, 110000, 105000, 130000, 120000, 150000]
+};
+
 let salesChartInstance = null;
 let categoryPieInstance = null;
 let monthlyBarInstance = null;
@@ -108,6 +113,10 @@ window.initChart = function() {
         // Overview Chart
         const ctxSales = document.getElementById('salesChart');
         if (ctxSales && ctxSales.offsetParent !== null) {
+            const yearSelector = document.getElementById('yearSelector');
+            const selectedYear = yearSelector ? yearSelector.value : "2026";
+            const currentYearData = salesData[selectedYear] || salesData["2026"];
+
             const grad = ctxSales.getContext('2d').createLinearGradient(0, 0, 0, 300);
             grad.addColorStop(0, colors.bgOpacity1);
             grad.addColorStop(1, colors.bgOpacity2);
@@ -118,7 +127,7 @@ window.initChart = function() {
                     labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس'],
                     datasets: [{
                         label: 'المبيعات ($)',
-                        data: [85000, 121000, 98000, 142000, 128000, 181000, 169000, 215000],
+                        data: currentYearData,
                         borderColor: colors.line,
                         backgroundColor: grad,
                         borderWidth: 3,
